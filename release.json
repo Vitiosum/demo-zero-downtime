@@ -1,7 +1,7 @@
 {
-  "version": "v2",
-  "name": "Bravo",
-  "color": "#11bea9",
-  "health": "ok",
-  "note": "Nouvelle version, déployée sans coupure."
+  "version": "v3",
+  "name": "Charlie",
+  "color": "#fcb900",
+  "health": "fail",
+  "note": "Cassée exprès : /health répond 503, Clever Cloud refuse de lui envoyer le trafic."
 }
