@@ -1,7 +1,7 @@
 {
-  "version": "v2",
-  "name": "Bravo",
-  "color": "#11bea9",
+  "version": "v1",
+  "name": "Alpha",
+  "color": "#8f8cf2",
   "health": "ok",
-  "note": "Nouvelle version, déployée sans coupure."
+  "note": "Première version en production."
 }
