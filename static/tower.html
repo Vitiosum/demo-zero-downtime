@@ -9,30 +9,28 @@
 <main class="cc-container">
 
   <section class="zd-tower" aria-labelledby="tower-title" data-release="{{.Release.Name}}">
-    <div class="zd-tower__head">
-      <h1 id="tower-title" class="zd-headline" aria-live="polite">
-        <span id="h-who" class="zd-headline__who">En attente</span> <span id="h-verb">de la première réponse.</span><br>
-        <span id="h-err" class="zd-headline__err">0 erreur</span> sur <span id="h-total">0 requête</span>.
-      </h1>
-      <div class="zd-controls" role="group" aria-label="Réglages de la tour">
-        <label class="zd-rate">
-          <span class="cc-hide-sm">Cadence</span>
-          <select id="rate" class="cc-select">
+    <h1 id="tower-title" class="zd-headline" aria-live="polite">
+      <span id="h-who" class="zd-headline__who">En attente</span> <span id="h-verb">de la première réponse.</span><br>
+      <span id="h-err" class="zd-headline__err">0 erreur</span> sur <span id="h-total">0 requête</span>.
+    </h1>
+    <p id="now" class="zd-now" aria-live="polite"><time></time><span>La tour démarre : premières requêtes en route.</span></p>
+
+    <figure class="zd-ribbon">
+      <canvas id="ribbon" aria-label="Ruban des dernières requêtes, coloré par release" role="img"></canvas>
+      <div class="zd-ribbon__axis" aria-hidden="true"><span id="ax-left">—</span><span>maintenant</span></div>
+      <div class="zd-ribbon__foot">
+        <figcaption class="zd-legend"><b id="lead-rate">4</b> requêtes/s vers <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu ; deux hauteurs pour deux processus. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur.</figcaption>
+        <div class="zd-controls" role="group" aria-label="Réglages de la tour">
+          <select id="rate" class="cc-select" aria-label="Cadence">
             <option value="1">1 requête/s</option>
             <option value="2">2 requêtes/s</option>
             <option value="4" selected>4 requêtes/s</option>
             <option value="8">8 requêtes/s</option>
           </select>
-        </label>
-        <button id="pause" class="cc-btn cc-btn--sm" type="button">Mettre en pause</button>
-        <button id="reset" class="cc-btn cc-btn--sm cc-btn--ghost" type="button">Remettre à zéro</button>
+          <button id="pause" class="cc-btn cc-btn--sm" type="button">Pause</button>
+          <button id="reset" class="cc-btn cc-btn--sm cc-btn--ghost" type="button">Remettre à zéro</button>
+        </div>
       </div>
-    </div>
-
-    <figure class="zd-ribbon">
-      <canvas id="ribbon" aria-label="Ruban des dernières requêtes, coloré par release" role="img"></canvas>
-      <div class="zd-ribbon__axis" aria-hidden="true"><span id="ax-left">—</span><span>maintenant</span></div>
-      <figcaption class="zd-legend">Ce navigateur envoie <b id="lead-rate">4</b> requêtes/s à <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur.</figcaption>
     </figure>
 
     <dl class="zd-counters">

@@ -26,6 +26,7 @@
   let rate = clampRate(Number(new URLSearchParams(location.search).get('rate')) || 4);
   let timer = null;
   let paused = false;
+  let procCount = 0;        // processes seen, to give each one of two bar heights
 
   function clampRate(r) { return [1, 2, 4, 8].includes(r) ? r : 4; }
 
@@ -59,6 +60,7 @@
     const at = Date.now();
     Object.assign(e, { done: true, ok: true, color: safeColor(j.color), release: j.name, boot: j.boot, ms });
     S.ok++; S.lastOkAt = at;
+    if (!S.procs.has(j.boot)) e.idx = procCount; else e.idx = S.procs.get(j.boot).idx;
     const commit = j.commit || j.built_from || '';
 
     let r = S.releases.get(j.name);
@@ -74,7 +76,7 @@
       p = {
         boot: j.boot, release: j.name, version: j.version, color: safeColor(j.color),
         instance: j.instance || '', instanceName: j.instance_name || '', commit, deployment: j.deployment || '',
-        first: at, last: at, count: 0, gone: false,
+        first: at, last: at, count: 0, gone: false, idx: procCount++,
       };
       S.procs.set(j.boot, p);
       log(at, 'proc', `${j.name} (${j.version}) répond depuis un nouveau processus ${j.boot}${instText(p)}.`, p.color);
@@ -146,6 +148,7 @@
   const ctx = canvas.getContext('2d');
 
   function render() {
+    renderNow();
     renderHeadline();
     renderCounters();
     renderWho();
@@ -177,6 +180,18 @@
     $('h-total').textContent = `${nf.format(done)} requête${done > 1 ? 's' : ''}`;
   }
 
+  // The latest notable event, under the headline: what the platform just did.
+  function renderNow() {
+    const ev = [...S.events].reverse().find((e) => e.kind !== 'proc' || S.procs.size > 1);
+    if (!ev) return;
+    const p = $('now');
+    if (p.dataset.t === `${ev.t}${ev.text}`) return;
+    p.dataset.t = `${ev.t}${ev.text}`;
+    p.style.setProperty('--c', ev.color || '#9d9dbb');
+    p.querySelector('time').textContent = clock(ev.t, true);
+    p.querySelector('span').textContent = ev.text;
+  }
+
   function renderCounters() {
     $('c-sent').textContent = nf.format(S.sent);
     $('c-ok').textContent = nf.format(S.ok);
@@ -197,7 +212,7 @@
       if (p.gone) tr.className = 'is-gone';
       tr.append(
         td(chip(p.release, p.version, p.color)),
-        td(text(instText(p).replace(/^, /, '') || '—')),
+        td(text(p.instance || p.instanceName ? `#${p.instance} · ${p.instanceName}` : '—'), 'inst'),
         td(commitCell(p.commit)),
         td(text(nf.format(p.count)), 'num'),
         td(text(`${clock(p.first, true)} → ${clock(p.last, true)}`), 'mono'),
@@ -243,7 +258,7 @@
       let bh, color;
       if (!e.done) { bh = (h - top) * 0.16; color = 'rgba(222,221,238,0.28)'; }
       else if (!e.ok) { bh = h; color = RED; }
-      else { bh = (h - top) * 0.72; color = e.color; }
+      else { bh = (h - top) * (e.idx % 2 ? 0.5 : 0.72); color = e.color; }
       ctx.fillStyle = color;
       ctx.fillRect(x, h - bh, bar, bh);
       if (e.ok) {
@@ -305,7 +320,7 @@
   rateSel.addEventListener('change', () => { rate = clampRate(Number(rateSel.value)); start(); });
   $('pause').addEventListener('click', (ev) => {
     paused = !paused;
-    ev.currentTarget.textContent = paused ? 'Reprendre' : 'Mettre en pause';
+    ev.currentTarget.textContent = paused ? 'Reprendre' : 'Pause';
     start();
   });
   $('reset').addEventListener('click', () => {
