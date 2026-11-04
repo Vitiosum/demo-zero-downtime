@@ -19,7 +19,7 @@
       <canvas id="ribbon" aria-label="Ruban des dernières requêtes, coloré par release" role="img"></canvas>
       <div class="zd-ribbon__axis" aria-hidden="true"><span id="ax-left">—</span><span>maintenant</span></div>
       <div class="zd-ribbon__foot">
-        <figcaption class="zd-legend"><b id="lead-rate">4</b> requêtes/s vers <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu ; deux hauteurs pour deux processus. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur. Par défaut, l'onglet garde sa connexion et reste sur la même instance ; cochez « Nouveau visiteur » pour voir la répartition entre instances.</figcaption>
+        <figcaption class="zd-legend"><b id="lead-rate">4</b> requêtes/s vers <code>GET /api/whoami</code>. Un trait par requête : la couleur dit la release, la hauteur le processus, le rouge une erreur (hors 2xx, coupure réseau, plus de 3 s). Cet onglet garde sa connexion, donc son instance ; « Nouveau visiteur » en ouvre une par requête.</figcaption>
         <div class="zd-controls" role="group" aria-label="Réglages de la tour">
           <select id="rate" class="cc-select" aria-label="Cadence">
             <option value="1">1 requête/s</option>
@@ -89,7 +89,7 @@ clever deploy</code></pre>
       <li style="--v:#deddee">
         <h3>Passer à deux instances</h3>
         <pre><code>clever scale --instances 2</code></pre>
-        <p>Une deuxième instance démarre et rejoint la répartition de charge. Les traits alternent entre deux processus. Retour à la normale : <code>clever scale --min-instances 1 --max-instances 2</code>.</p>
+        <p>Clever Cloud démarre deux instances neuves depuis le cache de build, comme pour un déploiement, et arrête l'ancienne 2 minutes plus tard. Cochez « Nouveau visiteur » : les traits alternent entre deux hauteurs, une par instance. Retour à la plage : <code>clever scale --min-instances 1 --max-instances 2</code>.</p>
       </li>
     </ol>
   </section>

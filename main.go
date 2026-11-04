@@ -72,10 +72,10 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      15 * time.Second,
-		// Keep idle connections from the load balancer longer than the load balancer
-		// keeps them (the doc gives 180 s for Sōzu's backend operations). With 60 s,
-		// the tower saw rare 502s answered in 0 ms: Sōzu reused a connection the app
-		// had just closed. See the README, section "What we measured".
+		// Never close an idle connection before the load balancer does (the doc gives
+		// 180 s for Sōzu's backend operations). With 60 s we saw rare 502s answered by
+		// the load balancer in 0 to 3 ms; with 10 min we saw none. A precaution, not a
+		// proven cause: see "Rare 502s outside the switch-overs" in the README.
 		IdleTimeout: 10 * time.Minute,
 	}
 
