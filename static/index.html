@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr">
+<head>
+{{template "head"}}
+<title>{{.Release.Name}} ({{.Release.Version}}) · Déploiements sans coupure · Clever Cloud</title>
+</head>
+<body class="zd-app-page" style="--v:{{.Release.Color}}">
+{{template "topbar" .}}
+<main class="cc-container">
+  <section class="zd-app" aria-labelledby="app-title">
+    <div class="zd-app__card">
+      <p class="zd-app__kicker">Release en service · {{.Release.Version}}</p>
+      <h1 id="app-title" class="zd-app__name">{{.Release.Name}}</h1>
+      <p class="zd-app__note">{{.Release.Note}}</p>
+      <p class="zd-app__who">Réponse de {{with .CC.Instance}}l'instance <b>{{.}}</b>{{else}}<b>ce poste</b> (hors Clever Cloud){{end}}, processus <b>{{.Boot}}</b> lancé il y a {{.Uptime}}.</p>
+      <div class="zd-app__cta">
+        <a class="cc-btn cc-btn--gradient" href="/tower">Ouvrir la tour de contrôle</a>
+        <a class="cc-btn" href="/">Recharger</a>
+      </div>
+    </div>
+    <aside class="zd-app__side">
+      {{template "platform" .}}
+      <p class="zd-hint">Rechargez pendant un <code>clever deploy</code> : la page change de couleur au moment où Clever Cloud bascule le trafic vers la nouvelle release. La tour de contrôle mesure cette bascule requête par requête.</p>
+    </aside>
+  </section>
+</main>
+{{template "footer" .}}
+</body>
+</html>

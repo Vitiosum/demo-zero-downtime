@@ -1,0 +1,11 @@
+.clever.json
+# build outputs
+demo-zero-downtime
+*.exe
+# probe output
+*.csv
+# local env / OS / logs
+.env
+.env.*
+.DS_Store
+*.log

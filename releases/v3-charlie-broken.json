@@ -1,0 +1,7 @@
+{
+  "version": "v3",
+  "name": "Charlie",
+  "color": "#fcb900",
+  "health": "fail",
+  "note": "Cassée exprès : /health répond 503, Clever Cloud refuse de lui envoyer le trafic."
+}

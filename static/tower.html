@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="fr">
+<head>
+{{template "head"}}
+<title>Tour de contrôle · Déploiements sans coupure · Clever Cloud</title>
+</head>
+<body class="zd-tower-page">
+{{template "topbar" .}}
+<main class="cc-container">
+
+  <section class="zd-tower" aria-labelledby="tower-title" data-release="{{.Release.Name}}">
+    <div class="zd-tower__head">
+      <h1 id="tower-title" class="zd-headline" aria-live="polite">
+        <span id="h-who" class="zd-headline__who">En attente</span> <span id="h-verb">de la première réponse.</span><br>
+        <span id="h-err" class="zd-headline__err">0 erreur</span> sur <span id="h-total">0 requête</span>.
+      </h1>
+      <div class="zd-controls" role="group" aria-label="Réglages de la tour">
+        <label class="zd-rate">
+          <span class="cc-hide-sm">Cadence</span>
+          <select id="rate" class="cc-select">
+            <option value="1">1 requête/s</option>
+            <option value="2">2 requêtes/s</option>
+            <option value="4" selected>4 requêtes/s</option>
+            <option value="8">8 requêtes/s</option>
+          </select>
+        </label>
+        <button id="pause" class="cc-btn cc-btn--sm" type="button">Mettre en pause</button>
+        <button id="reset" class="cc-btn cc-btn--sm cc-btn--ghost" type="button">Remettre à zéro</button>
+      </div>
+    </div>
+
+    <figure class="zd-ribbon">
+      <canvas id="ribbon" aria-label="Ruban des dernières requêtes, coloré par release" role="img"></canvas>
+      <div class="zd-ribbon__axis" aria-hidden="true"><span id="ax-left">—</span><span>maintenant</span></div>
+      <figcaption class="zd-legend">Ce navigateur envoie <b id="lead-rate">4</b> requêtes/s à <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur.</figcaption>
+    </figure>
+
+    <dl class="zd-counters">
+      <div><dt>Envoyées</dt><dd id="c-sent">0</dd></div>
+      <div><dt>Réussies (2xx)</dt><dd id="c-ok">0</dd></div>
+      <div class="is-err"><dt>Erreurs</dt><dd id="c-err">0</dd></div>
+      <div><dt>Latence p95, 60 s</dt><dd id="c-p95">—</dd></div>
+      <div><dt>Instances qui répondent</dt><dd id="c-inst">0</dd></div>
+    </dl>
+  </section>
+
+  <div class="zd-grid">
+    <section class="zd-panel" aria-labelledby="who-title">
+      <h2 id="who-title" class="zd-h2">Qui répond</h2>
+      <p class="zd-hint">Une ligne par processus. Un déploiement en démarre un nouveau ; l'ancien s'efface quand Clever Cloud l'arrête.</p>
+      <div class="zd-table-wrap">
+        <table class="zd-table">
+          <thead><tr><th>Release</th><th>Instance</th><th>Commit</th><th class="num">Réponses</th><th>Vue</th><th>État</th></tr></thead>
+          <tbody id="who"><tr class="zd-empty-row"><td colspan="6">Aucune réponse pour l'instant.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="zd-panel" aria-labelledby="log-title">
+      <h2 id="log-title" class="zd-h2">Journal de la tour</h2>
+      <p class="zd-hint">Ce que la tour a vu, à la milliseconde, depuis ce navigateur.</p>
+      <ol id="log" class="zd-log" aria-live="polite"></ol>
+    </section>
+  </div>
+
+  <section class="zd-scenes" aria-labelledby="scenes-title">
+    <h2 id="scenes-title" class="zd-h2">Quatre scènes, la tour ouverte</h2>
+    <ol class="zd-scene-list">
+      <li style="--v:#11bea9">
+        <h3>Déployer sans coupure</h3>
+        <pre><code>cp releases/v2-bravo.json release.json
+git commit -am "Release v2 Bravo"
+clever deploy</code></pre>
+        <p>Clever Cloud démarre une nouvelle instance à côté de l'ancienne, attend que <code>/health</code> réponde 200, puis bascule le trafic. Bravo entre dans le ruban, Alpha s'efface, le compteur d'erreurs ne bouge pas.</p>
+      </li>
+      <li style="--v:#fcb900">
+        <h3>Pousser une version cassée</h3>
+        <pre><code>cp releases/v3-charlie-broken.json release.json
+git commit -am "Release v3 Charlie"
+clever deploy</code></pre>
+        <p>Charlie démarre, mais son <code>/health</code> répond 503. Clever Cloud ne lui envoie aucune requête et marque le déploiement en échec. Bravo continue de servir.</p>
+      </li>
+      <li style="--v:#8f8cf2">
+        <h3>Revenir à un commit précis</h3>
+        <pre><code>clever restart --commit &lt;commit d'Alpha&gt;</code></pre>
+        <p>Le tableau « Qui répond » donne le commit de chaque release. Clever Cloud redéploie ce commit, avec le même health check et la même bascule.</p>
+      </li>
+      <li style="--v:#deddee">
+        <h3>Passer à deux instances</h3>
+        <pre><code>clever scale --instances 2</code></pre>
+        <p>Une deuxième instance démarre et rejoint la répartition de charge. Les traits alternent entre deux processus. Retour à la normale : <code>clever scale --min-instances 1 --max-instances 2</code>.</p>
+      </li>
+    </ol>
+  </section>
+
+  <div class="zd-grid zd-grid--foot">
+    {{template "platform" .}}
+    <section class="zd-cert" aria-labelledby="cert-title">
+      {{template "cc-badge"}}
+      <div>
+        <h2 id="cert-title">Déployer, scaler, revenir en arrière : c'est au programme de la certification.</h2>
+        <p>Le parcours <a href="https://academy.clever.cloud/course/section.php?id=18" target="_blank" rel="noopener">Advanced Deployment</a> de la Clever Cloud Academy est gratuit et en ligne, avec un badge vérifiable à la clé.</p>
+        <a class="cc-btn cc-btn--gradient" href="https://academy.clever.cloud/" target="_blank" rel="noopener">Passer la certification</a>
+      </div>
+    </section>
+  </div>
+</main>
+{{template "footer" .}}
+<script src="/tower.js"></script>
+</body>
+</html>
