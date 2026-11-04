@@ -20,7 +20,7 @@
     </div>
     <aside class="zd-app__side">
       {{template "platform" .}}
-      <p class="zd-hint">Rechargez pendant un <code>clever deploy</code> : la page change de couleur au moment où Clever Cloud bascule le trafic vers la nouvelle release. La tour de contrôle mesure cette bascule requête par requête.</p>
+      <p class="zd-hint">Après un <code>clever deploy</code>, une nouvelle connexion (fenêtre privée, autre navigateur) arrive sur la nouvelle release dès son health check. Cet onglet garde sa connexion vers l'ancienne instance jusqu'à ce que Clever Cloud l'arrête : 2 minutes plus tard dans nos mesures. La tour de contrôle suit cette bascule requête par requête.</p>
     </aside>
   </section>
 </main>

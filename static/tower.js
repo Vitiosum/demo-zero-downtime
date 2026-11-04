@@ -126,7 +126,7 @@
       const how = overlap >= 0
         ? `les deux releases ont répondu en parallèle pendant ${overlap.toFixed(1).replace('.', ',')} s`
         : `dernière réponse de ${sw.from.join(' et ')} à ${clock(lastOld)}, première de ${sw.to} à ${clock(firstNew)}`;
-      log(now, 'done', `Bascule ${sw.from.join(' + ')} → ${sw.to} terminée : ${how}, ${errors} erreur${errors > 1 ? 's' : ''} pendant la bascule.`, safeColor(S.releases.get(sw.to).color));
+      log(now, 'done', `Bascule ${sw.from.join(' + ')} → ${sw.to} terminée : ${how}, ${errors}\u00a0erreur${errors > 1 ? 's' : ''} pendant la bascule.`, safeColor(S.releases.get(sw.to).color));
     }
   }
 
@@ -174,7 +174,7 @@
       $('h-verb').textContent = names.length > 1 ? 'répondent.' : 'répond.';
     }
     const errEl = $('h-err');
-    errEl.textContent = `${nf.format(S.err)} erreur${S.err > 1 ? 's' : ''}`;
+    errEl.textContent = `${nf.format(S.err)}\u00a0erreur${S.err > 1 ? 's' : ''}`;
     errEl.classList.toggle('is-bad', S.err > 0);
     const done = S.ok + S.err;
     $('h-total').textContent = `${nf.format(done)} requête${done > 1 ? 's' : ''}`;
