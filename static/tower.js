@@ -80,7 +80,7 @@
       log(at, 'proc', `${j.name} (${j.version}) répond depuis un nouveau processus ${j.boot}${instText(p)}.`, p.color);
       if (active.length && !active.includes(j.name) && !S.switch) {
         S.switch = { from: active, to: j.name, start: at, err0: S.err };
-        log(at, 'switch', `Bascule en cours : ${j.name} répond, ${active.join(' et ')} aussi.`, p.color);
+        log(at, 'switch', `Bascule en cours : première réponse de ${j.name}, ${active.join(' et ')} répond encore.`, p.color);
       }
     }
     p.last = at; p.count++;
@@ -119,9 +119,11 @@
       const closed = { from: sw.from, to: sw.to, firstNew, lastOld, overlapSec: overlap, errors };
       S.switches.push(closed);
       S.switch = null;
+      // A negative overlap only means the next request already went to the new
+      // release: the gap is the time between two requests, not a time without answers.
       const how = overlap >= 0
         ? `les deux releases ont répondu en parallèle pendant ${overlap.toFixed(1).replace('.', ',')} s`
-        : `${(-overlap).toFixed(1).replace('.', ',')} s sans réponse entre les deux`;
+        : `dernière réponse de ${sw.from.join(' et ')} à ${clock(lastOld)}, première de ${sw.to} à ${clock(firstNew)}`;
       log(now, 'done', `Bascule ${sw.from.join(' + ')} → ${sw.to} terminée : ${how}, ${errors} erreur${errors > 1 ? 's' : ''} pendant la bascule.`, safeColor(S.releases.get(sw.to).color));
     }
   }

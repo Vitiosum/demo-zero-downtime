@@ -6,6 +6,7 @@
 // summary the README numbers come from.
 //
 //	go run probe/probe.go -url https://app-xxx.cleverapps.io -rps 2 -out run.csv
+//	go run probe/probe.go -url https://app-xxx.cleverapps.io -rps 1 -fresh -out fresh.csv
 package main
 
 import (
@@ -54,9 +55,10 @@ func main() {
 	rps := flag.Float64("rps", 2, "requests per second (keep it light)")
 	out := flag.String("out", "probe.csv", "CSV file, one line per request")
 	dur := flag.Duration("for", 0, "stop after this duration (0 = until Ctrl-C)")
+	fresh := flag.Bool("fresh", false, "open a new connection for every request (no keep-alive), like a new visitor")
 	flag.Parse()
 	if *base == "" || *rps <= 0 || *rps > 10 {
-		fmt.Fprintln(os.Stderr, "usage: go run probe/probe.go -url https://app-xxx.cleverapps.io [-rps 2] [-out probe.csv] [-for 10m]")
+		fmt.Fprintln(os.Stderr, "usage: go run probe/probe.go -url https://app-xxx.cleverapps.io [-rps 2] [-fresh] [-out probe.csv] [-for 10m]")
 		os.Exit(2)
 	}
 	target := strings.TrimRight(*base, "/") + "/api/whoami"
@@ -78,7 +80,10 @@ func main() {
 		defer cancel()
 	}
 
-	client := &http.Client{Timeout: 3 * time.Second}
+	// By default the probe keeps its connection open, like a browser tab: the
+	// load balancer then keeps sending it to the same instance. -fresh shows
+	// where a new visitor lands.
+	client := &http.Client{Timeout: 3 * time.Second, Transport: &http.Transport{DisableKeepAlives: *fresh}}
 	var (
 		mu     sync.Mutex
 		wg     sync.WaitGroup
@@ -141,7 +146,11 @@ func main() {
 	defer tick.Stop()
 	sec := time.NewTicker(time.Second)
 	defer sec.Stop()
-	fmt.Printf("probe: GET %s, %.1f req/s, CSV in %s (times are UTC)\n", target, *rps, *out)
+	mode := "keep-alive connection"
+	if *fresh {
+		mode = "new connection per request"
+	}
+	fmt.Printf("probe: GET %s, %.1f req/s, %s, CSV in %s (times are UTC)\n", target, *rps, mode, *out)
 loop:
 	for {
 		select {
