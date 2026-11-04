@@ -19,7 +19,7 @@
       <canvas id="ribbon" aria-label="Ruban des dernières requêtes, coloré par release" role="img"></canvas>
       <div class="zd-ribbon__axis" aria-hidden="true"><span id="ax-left">—</span><span>maintenant</span></div>
       <div class="zd-ribbon__foot">
-        <figcaption class="zd-legend"><b id="lead-rate">4</b> requêtes/s vers <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu ; deux hauteurs pour deux processus. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur.</figcaption>
+        <figcaption class="zd-legend"><b id="lead-rate">4</b> requêtes/s vers <code>GET /api/whoami</code>. Un trait par requête, à la couleur de la release qui a répondu ; deux hauteurs pour deux processus. Erreur (hors 2xx, coupure réseau, plus de 3 s) : trait rouge pleine hauteur. Par défaut, l'onglet garde sa connexion et reste sur la même instance ; cochez « Nouveau visiteur » pour voir la répartition entre instances.</figcaption>
         <div class="zd-controls" role="group" aria-label="Réglages de la tour">
           <select id="rate" class="cc-select" aria-label="Cadence">
             <option value="1">1 requête/s</option>
@@ -27,6 +27,9 @@
             <option value="4" selected>4 requêtes/s</option>
             <option value="8">8 requêtes/s</option>
           </select>
+          <label class="zd-toggle" title="L'app ferme sa connexion après chaque réponse : le répartiteur choisit une instance à chaque requête, comme pour un nouveau visiteur.">
+            <input type="checkbox" id="fresh"> Nouveau visiteur à chaque requête
+          </label>
           <button id="pause" class="cc-btn cc-btn--sm" type="button">Pause</button>
           <button id="reset" class="cc-btn cc-btn--sm cc-btn--ghost" type="button">Remettre à zéro</button>
         </div>
@@ -69,19 +72,19 @@
         <pre><code>cp releases/v2-bravo.json release.json
 git commit -am "Release v2 Bravo"
 clever deploy</code></pre>
-        <p>Clever Cloud démarre une nouvelle instance à côté de l'ancienne, attend que <code>/health</code> réponde 200, puis bascule le trafic. Bravo entre dans le ruban, Alpha s'efface, le compteur d'erreurs ne bouge pas.</p>
+        <p>Clever Cloud démarre une nouvelle instance à côté de l'ancienne et attend que <code>/health</code> réponde 200. Les nouvelles connexions passent sur Bravo dans la seconde. Celle de cette page reste sur Alpha jusqu'à ce que Clever Cloud arrête Alpha, 2 minutes plus tard dans nos mesures, puis bascule sans erreur.</p>
       </li>
       <li style="--v:#fcb900">
         <h3>Pousser une version cassée</h3>
         <pre><code>cp releases/v3-charlie-broken.json release.json
 git commit -am "Release v3 Charlie"
 clever deploy</code></pre>
-        <p>Charlie démarre, mais son <code>/health</code> répond 503. Clever Cloud ne lui envoie aucune requête et marque le déploiement en échec. Bravo continue de servir.</p>
+        <p>Charlie démarre, mais son <code>/health</code> répond 503. Clever Cloud réessaie en doublant le délai (2 s, 4 s… 512 s) sans lui envoyer de trafic, puis marque le déploiement en échec : 10 essais et 17 minutes dans nos mesures. Bravo sert pendant tout ce temps.</p>
       </li>
       <li style="--v:#8f8cf2">
         <h3>Revenir à un commit précis</h3>
         <pre><code>clever restart --commit &lt;commit d'Alpha&gt;</code></pre>
-        <p>Le tableau « Qui répond » donne le commit de chaque release. Clever Cloud redéploie ce commit, avec le même health check et la même bascule.</p>
+        <p>Le tableau « Qui répond » donne le commit de chaque release (bouton « copier »). Clever Cloud reprend le build de ce commit dans son cache, sans recompiler : 15 secondes jusqu'au health check dans nos mesures, puis la même bascule.</p>
       </li>
       <li style="--v:#deddee">
         <h3>Passer à deux instances</h3>

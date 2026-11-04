@@ -173,6 +173,11 @@ func page(name string) http.HandlerFunc {
 }
 
 func whoamiAPI(w http.ResponseWriter, r *http.Request) {
+	// ?fresh=1 ("new visitor" in the tower): close the connection after this
+	// answer, so the load balancer picks an instance again for the next request.
+	if r.URL.Query().Get("fresh") == "1" {
+		w.Header().Set("Connection", "close")
+	}
 	n := served.Add(1)
 	lastServed.Store(time.Now().UnixMilli())
 	cc := loadPlatform(os.Getenv)

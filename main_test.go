@@ -100,6 +100,15 @@ func TestWhoami(t *testing.T) {
 	}
 }
 
+func TestFreshClosesConnection(t *testing.T) {
+	if rec := get(t, "/api/whoami?fresh=1"); rec.Header().Get("Connection") != "close" {
+		t.Errorf("?fresh=1 must answer Connection: close")
+	}
+	if rec := get(t, "/api/whoami"); rec.Header().Get("Connection") != "" {
+		t.Errorf("default must keep the connection")
+	}
+}
+
 func TestPages(t *testing.T) {
 	for path, want := range map[string]string{
 		"/":      "Ouvrir la tour de contrôle",

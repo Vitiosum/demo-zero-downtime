@@ -26,6 +26,8 @@ code { font-size: 0.9em; }
 .zd-now time { font: 500 13px/1 var(--cc-mono); color: var(--cc-muted); flex: none; }
 .zd-controls { display: flex; gap: 8px; align-items: center; flex: none; }
 .zd-controls .cc-select { width: auto; padding-block: 6px; font-size: 14px; }
+.zd-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--cc-text-2); white-space: nowrap; cursor: pointer; }
+.zd-toggle input { accent-color: var(--cc-orange); width: 16px; height: 16px; }
 
 .zd-ribbon {
   margin: 26px 0 0; padding: 16px 16px 10px; border: 1px solid var(--cc-border); border-radius: var(--cc-radius);

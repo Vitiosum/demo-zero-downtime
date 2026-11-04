@@ -27,6 +27,10 @@
   let timer = null;
   let paused = false;
   let procCount = 0;        // processes seen, to give each one of two bar heights
+  // "New visitor" mode: /api/whoami?fresh=1 makes the app close its connection after
+  // the answer, so the load balancer picks an instance again for the next request.
+  const freshBox = $('fresh');
+  freshBox.checked = new URLSearchParams(location.search).get('fresh') === '1';
 
   function clampRate(r) { return [1, 2, 4, 8].includes(r) ? r : 4; }
 
@@ -44,7 +48,7 @@
     const ctl = new AbortController();
     const to = setTimeout(() => ctl.abort(), TIMEOUT_MS);
     const t0 = performance.now();
-    fetch('/api/whoami', { cache: 'no-store', signal: ctl.signal, headers: { Accept: 'application/json' } })
+    fetch(freshBox.checked ? '/api/whoami?fresh=1' : '/api/whoami', { cache: 'no-store', signal: ctl.signal, headers: { Accept: 'application/json' } })
       .then(async (r) => {
         if (!r.ok) throw { label: 'HTTP ' + r.status };
         const j = await r.json().catch(() => null);
