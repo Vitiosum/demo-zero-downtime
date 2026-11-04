@@ -10,6 +10,8 @@
 
 **Run it yourself.** The hosted demo was taken down after the measurements (November 2026). The steps in [Deploy on Clever Cloud](#deploy-on-clever-cloud) recreate it in about 3 minutes. Playing the four scenes takes about 30 minutes, 17 of them spent watching Clever Cloud reject the broken release.
 
+**Get certified.** This demo runs on Clever Cloud. To deploy your own apps the same way, get certified at the [Clever Cloud Academy](https://academy.clever.cloud/).
+
 ## What Clever Cloud does here
 
 | Scene | Command | What Clever Cloud did (measured) | Errors seen |
