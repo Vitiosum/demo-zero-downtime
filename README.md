@@ -2,6 +2,8 @@
 
 > Before moving to a PaaS, every enterprise team asks two questions: does a deployment cut the service, and what happens when the new version is broken? This demo answers with measurements. A small Go app says which release answered (Alpha, Bravo or Charlie, each with its own color), from which instance and which process. Its **control tower** sends a few requests per second from the browser and counts every success and every error while you deploy, push a broken release, roll back to a commit and scale out. Every figure below was measured on Clever Cloud on 4 November 2026. Nothing is assumed.
 
+![Time-lapse, live on Clever Cloud: the control tower keeps sending 4 requests per second while `clever deploy` replaces release Alpha with Bravo; the ribbon turns from lavender to green with 0 errors (real frames, 7 s at real speed around the switch, then 28 s shown in 3 s)](docs/tour.gif)
+
 ![The control tower 28 s after Clever Cloud switched this tab from Alpha to Bravo: the ribbon turns from lavender to green, 0 errors out of 1,230 requests](docs/tower.png)
 
 | Phone, the tower | Phone, the app |
@@ -113,6 +115,8 @@ cp releases/v3-charlie-broken.json release.json && git commit -am "Release v3 Ch
 clever restart --commit <alpha-commit-sha>
 
 # Scene 4: two instances, then back to the 1–2 range
+# First make sure the app may run 2 instances: if it is limited to 1, the next command cannot add the second one
+clever scale --min-instances 1 --max-instances 2 --alias demo-zero-downtime
 clever scale --instances 2
 clever scale --min-instances 1 --max-instances 2
 ```
