@@ -10,7 +10,7 @@
 |---|---|
 | <img src="docs/phone-tower.png" width="300" alt="The tower on a phone after the Alpha to Bravo switch"> | <img src="docs/phone-app.png" width="300" alt="The app on a phone, release Bravo"> |
 
-**Run it yourself.** A live copy runs at <https://app-9880cd24-e28b-4a94-942c-296b6f483ee0.cleverapps.io/tower> (redeployed on 2026-11-10; it may be stopped between demos). The steps in [Deploy on Clever Cloud](#deploy-on-clever-cloud) recreate it in about 3 minutes. Playing the four scenes takes about 30 minutes, 17 of them spent watching Clever Cloud reject the broken release.
+**Run it yourself.** The hosted demo was taken down after the presales review (November 2026). The steps in [Deploy on Clever Cloud](#deploy-on-clever-cloud) recreate it in about 3 minutes. Playing the four scenes takes about 30 minutes, 17 of them spent watching Clever Cloud reject the broken release.
 
 **Get certified.** This demo runs on Clever Cloud. To deploy your own apps the same way, get certified at the [Clever Cloud Academy](https://academy.clever.cloud/).
 
